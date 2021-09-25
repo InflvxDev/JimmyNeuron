@@ -1,0 +1,41 @@
+<h1>Entrenamiento de la Neurona</h1>
+<div>
+    <div class="row align-items-center">
+        <div class="col-5" name="PanelPE">
+            <h3>Parametros de Entrenamiento</h3>
+
+            <form #formulario="ngForm" (ngSubmit)="Entrenamiento()">
+                <h5 class="card-title"><strong>N° Iteracciones</strong></h5>
+                <input class="form-control" type="number" [(ngModel)]="datosEntrenamiento.IteracionesMax" name="IteracionesMax" required>
+                <h5 class="card-title "><strong>Error Permitido</strong></h5>
+                <input class="form-control" type="number" [(ngModel)]="datosEntrenamiento.Error" name="Error" required>
+                <h5 class="card-title "><strong>Rata de Aprendizaje</strong></h5>
+                <input class="form-control" type="number" [(ngModel)]="datosEntrenamiento.RataAprendizaje" name="RataAprendizaje" required>
+                <h5 class="card-title "><strong>Funcion de Activacion</strong></h5>
+                <select class="form-control" [(ngModel)]="datosEntrenamiento.FuncionActivacion" name="FuncionActivacion" required>
+                    <option>Escalon</option>
+                    <option>Lineal</option>
+                </select>
+                <button type="submit" [disabled]="formulario.invalid" class="btn btn-success">Iniciar Entrenamiento</button>
+            </form>
+
+
+        </div>
+
+
+        <div class="col-3 ">
+            <h3>Datos Entrada</h3>
+            <input type="file" (change)="onChange($event.target.files)">
+            <div class="row">
+                <h3>Informacion Entrenamiento</h3>
+                <h4 class="card-title ">Entradas: {{Nentradas}} Salidas: {{Nsalidas}} Patrones: {{Npatrones}}</h4>
+                <h4 class="card-title ">Numero de Iteracciones: {{datosEntrenamiento.IteracionesMax}}</h4>
+                <h4 class="card-title ">Error Max Permitido: {{datosEntrenamiento.Error}}</h4>
+                <h4 class="card-title ">Rata de Aprendizaje: {{datosEntrenamiento.RataAprendizaje}}</h4>
+                <h4 class="card-title ">Funcion de Activacion: {{datosEntrenamiento.FuncionActivacion}}</h4>
+                <h4 class="card-title ">Pesos: 0 , 0</h4>
+            </div>
+            <button type="button" class="btn btn-success ">Iniciar Simulacion</button>
+        </div>
+    </div>
+</div>
