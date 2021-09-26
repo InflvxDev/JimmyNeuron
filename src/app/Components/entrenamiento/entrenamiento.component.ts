@@ -1,6 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild} from '@angular/core';
 import { Entrenamiento } from 'src/app/Models/Entrenamiento';
 import { Neurona } from 'src/app/Models/Neurona';
+
+
+
 
 @Component({
   selector: 'app-entrenamiento',
@@ -15,13 +18,18 @@ export class EntrenamientoComponent implements OnInit {
   Neurona : Neurona;
   datosEntrenamiento: Entrenamiento;
   fileContent: string | ArrayBuffer = '';
+
+  iniciarEntrenamiento : boolean = true;
+  iniciarNeurona: boolean = true;
+  iniciarSimulacion: boolean = true;
   constructor() {
     this.datosEntrenamiento = new Entrenamiento();
+   
    }
 
   ngOnInit(): void {
   }
-  
+   //--------------------------------Cargar Archivo------------------------------------------- 
 
   public onChange(fileList: FileList): void {
     let file = fileList[0];
@@ -51,6 +59,7 @@ export class EntrenamientoComponent implements OnInit {
         self.Npatrones = self.datosNeuronas.length;
         self.Nsalidas = self.datosNeuronas[0].Salidas.length;
         self.Nentradas = self.datosNeuronas[0].Entradas.length;
+        self.iniciarNeurona = false;
     }
     
     fileReader.readAsText(file);
@@ -77,6 +86,78 @@ export class EntrenamientoComponent implements OnInit {
     this.datosNeuronas.push(this.Neurona);
     
   }
+
+
+
+  //--------------------------------Grafica-------------------------------------------
+
   
+
+  view: any[] = [700, 300];
+
+  // options
+  legend: boolean = true;
+  showLabels: boolean = true;
+  animations: boolean = true;
+  xAxis: boolean = true;
+  yAxis: boolean = true;
+  showYAxisLabel: boolean = true;
+  showXAxisLabel: boolean = true;
+
+  timeline: boolean = true;
+
+  colorScheme = {
+    domain: ['#5AA454', '#E44D25', '#CFC0BB', '#7aa3e5', '#a8385d', '#aae3f5']
+  };
+
+ multi = [
+    {
+      "name": "Error",
+      "series": [
+        {
+          "name": "1",
+          "value": 0.04
+        },
+        {
+          "name": "10",
+          "value": 0.03
+        },
+        {
+          "name": "20",
+          "value": 0.02
+        }
+      ]
+    }
+  ];
+  
+
+  // onSelect(data : any): void {
+  //   console.log('Item clicked', JSON.parse(JSON.stringify(data)));
+  // }
+
+  // onActivate(data : any): void {
+  //   console.log('Activate', JSON.parse(JSON.stringify(data)));
+  // }
+
+  // onDeactivate(data : any): void {
+  //   console.log('Deactivate', JSON.parse(JSON.stringify(data)));
+  // }
+
+  //--------------------------------ENTRENAMIENTO-------------------------------------------
+
+  public inicializarpesos(){
+    for (let index = 0; index < this.Nentradas; index++) {
+      this.datosEntrenamiento.Pesos.push(this.ramdomizarpesos());
+    }
+    console.log(this.datosEntrenamiento.Pesos);
+    this.iniciarEntrenamiento = false;
+    this.iniciarNeurona = true;
+  }
+
+  public ramdomizarpesos(){
+    var numero = Math.random() * (1 - (-1)) + -1;
+    console.log(numero);
+    return numero
+  }
 
 }
