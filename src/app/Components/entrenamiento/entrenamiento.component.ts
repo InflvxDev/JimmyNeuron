@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild} from '@angular/core';
+
 import { Entrenamiento } from 'src/app/Models/Entrenamiento';
 import { Neurona } from 'src/app/Models/Neurona';
 
@@ -15,6 +16,7 @@ export class EntrenamientoComponent implements OnInit {
   Nsalidas : number;
   Npatrones : number;
   datosNeuronas: Neurona[] = [];
+
   Neurona : Neurona;
   datosEntrenamiento: Entrenamiento;
   fileContent: string | ArrayBuffer = '';
@@ -22,6 +24,9 @@ export class EntrenamientoComponent implements OnInit {
   iniciarEntrenamiento : boolean = true;
   iniciarNeurona: boolean = true;
   iniciarSimulacion: boolean = true;
+
+  PesosEntrenamiento: number[] = [];
+  Niteraccion: number = 1;
   constructor() {
     this.datosEntrenamiento = new Entrenamiento();
    
@@ -66,9 +71,7 @@ export class EntrenamientoComponent implements OnInit {
     
   }
  
-  public Entrenamiento(){
-    
-  }
+  
   
 
   public ParsearEntradasySalidas(entradas, salidas){
@@ -86,6 +89,10 @@ export class EntrenamientoComponent implements OnInit {
     this.datosNeuronas.push(this.Neurona);
     
   }
+
+  
+
+  
 
 
 
@@ -115,16 +122,8 @@ export class EntrenamientoComponent implements OnInit {
       "name": "Error",
       "series": [
         {
-          "name": "1",
-          "value": 0.04
-        },
-        {
-          "name": "10",
-          "value": 0.03
-        },
-        {
-          "name": "20",
-          "value": 0.02
+          "name": 1,
+          "value": 0.0
         }
       ]
     }
@@ -149,15 +148,100 @@ export class EntrenamientoComponent implements OnInit {
     for (let index = 0; index < this.Nentradas; index++) {
       this.datosEntrenamiento.Pesos.push(this.ramdomizarpesos());
     }
-    console.log(this.datosEntrenamiento.Pesos);
+
     this.iniciarEntrenamiento = false;
     this.iniciarNeurona = true;
   }
 
   public ramdomizarpesos(){
     var numero = Math.random() * (1 - (-1)) + -1;
-    console.log(numero);
     return numero
   }
+
+  public Entrenamiento(){
+    this.Neurona = new Neurona();
+    this.PesosEntrenamiento = this.datosEntrenamiento.Pesos;
+
+    var ERMS = 1;
+    var yr = 0;
+    var el = 0;
+    var ep = 0;
+    var sumep = 0;
+
+
+    while (this.Niteraccion <= this.datosEntrenamiento.IteracionesMax && ERMS > this.datosEntrenamiento.Error ) {
+      console.log("iteraccion: "+ this.Niteraccion);
+      sumep = 0;
+      ERMS = 0;
+
+      for (let index = 0; index < this.Npatrones; index++) {
+        this.Neurona = this.datosNeuronas[index];
+        yr = this.calcularYr(this.calcularS(this.PesosEntrenamiento,this.Neurona.Entradas),this.datosEntrenamiento.FuncionActivacion)
+        
+        
+        el = this.Neurona.Salidas[0] - yr
+        ep = Math.abs(el)/this.Nsalidas;
+
+        sumep += ep;
+        
+        console.log("Entradas: "+ this.Neurona.Entradas[0] + ", "+ this.Neurona.Entradas[1]);
+        console.log("Salida Esperada: "+ this.Neurona.Salidas[0]);
+        console.log("Salida de la red: "+ yr);
+        console.log("Error del Lineal"+ el);
+        console.log("Pesos actuales"+ this.PesosEntrenamiento.join(","));
+        for (let index = 0; index < this.Neurona.Entradas.length; index++) {
+
+
+          this.PesosEntrenamiento[index] += this.datosEntrenamiento.RataAprendizaje * el * this.Neurona.Entradas[index];
+
+        }
+        console.log("Pesos Nuevos"+ this.PesosEntrenamiento.join(","));
+
+        
+      }
+
+      ERMS = sumep/this.Npatrones;
+      console.log("Error Iteracion: "+ERMS);
+      this.multi[0].series.push({
+        name : this.Niteraccion,
+        value : ERMS
+      });
+      this.Niteraccion ++;
+
+    }
+
+    this.datosEntrenamiento.Pesos = this.PesosEntrenamiento;
+    this.iniciarEntrenamiento = true;
+    this.iniciarSimulacion = false;
+  }
+
+  public calcularS(pesos, entradas){
+    var s = 0;
+      for (let index = 0; index < pesos.length; index++) {
+        s +=  pesos[index] * entradas[index];  
+          
+      }
+
+      return s  
+  }
+
+  public calcularYr(S, funcionA){
+    var yr = 0;
+    if (funcionA == "Escalon") {
+
+      if (S > 0) {
+        yr = 1;
+      }
+      else{
+        yr = 0;
+      }
+    }
+    else{
+      yr = S;
+    }
+    return yr;
+  }
+
+
 
 }
