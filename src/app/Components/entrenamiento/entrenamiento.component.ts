@@ -26,7 +26,8 @@ export class EntrenamientoComponent implements OnInit {
   iniciarSimulacion: boolean = true;
 
   PesosEntrenamiento: number[] = [];
-  Niteraccion: number = 1;
+
+  Niteraccion: number;
   constructor() {
     this.datosEntrenamiento = new Entrenamiento();
    
@@ -108,8 +109,8 @@ export class EntrenamientoComponent implements OnInit {
   yAxis: boolean = true;
   showYAxisLabel: boolean = true;
   showXAxisLabel: boolean = true;
-  xAxisLabel: string = 'Year';
-  yAxisLabel: string = 'Population';
+  xAxisLabel: string = 'Iteracciones';
+  yAxisLabel: string = 'Error';
   timeline: boolean = true;
 
   colorScheme = {
@@ -146,22 +147,19 @@ export class EntrenamientoComponent implements OnInit {
 
   public inicializarpesos(){
     for (let index = 0; index < this.Nentradas; index++) {
-      this.datosEntrenamiento.Pesos.push(this.ramdomizarpesos());
+      this.datosEntrenamiento.Pesos.push(Math.random() * (2) - 1);
     }
 
     this.iniciarEntrenamiento = false;
     this.iniciarNeurona = true;
   }
 
-  public ramdomizarpesos(){
-    var numero = Math.random() * (1 - (-1)) + -1;
-    return numero
-  }
+ 
 
   public Entrenamiento(){
     this.Neurona = new Neurona();
     this.PesosEntrenamiento = this.datosEntrenamiento.Pesos;
-
+    this.Niteraccion =1;
     var ERMS = 1;
     var yr = 0;
     var el = 0;
@@ -170,10 +168,10 @@ export class EntrenamientoComponent implements OnInit {
 
 
     while (this.Niteraccion <= this.datosEntrenamiento.IteracionesMax && ERMS > this.datosEntrenamiento.Error ) {
-      console.log("iteraccion: "+ this.Niteraccion);
+      console.log("----------------ITERACCION N°: "+ this.Niteraccion+" -------------------------");
       sumep = 0;
       ERMS = 0;
-
+      console.log("PESOS ACTUALES: "+ this.PesosEntrenamiento.join(","));
       for (let index = 0; index < this.Npatrones; index++) {
         this.Neurona = this.datosNeuronas[index];
         yr = this.calcularYr(this.calcularS(this.PesosEntrenamiento,this.Neurona.Entradas),this.datosEntrenamiento.FuncionActivacion)
@@ -184,21 +182,21 @@ export class EntrenamientoComponent implements OnInit {
 
         sumep += ep;
         
-        console.log("Entradas: "+ this.Neurona.Entradas[0] + ", "+ this.Neurona.Entradas[1]);
-        console.log("Salida Esperada: "+ this.Neurona.Salidas[0]);
-        console.log("Salida de la red: "+ yr);
-        console.log("Error del Lineal"+ el);
-        console.log("Pesos actuales"+ this.PesosEntrenamiento.join(","));
+        console.log("ENTRADAS: "+ this.Neurona.Entradas.join(","));
+        console.log("Salida Esperada: "+ this.Neurona.Salidas[0] + " Salida de la red: "+ yr);
+        console.log("Error del Lineal: "+ el);
+        
         for (let index = 0; index < this.Neurona.Entradas.length; index++) {
 
 
           this.PesosEntrenamiento[index] += this.datosEntrenamiento.RataAprendizaje * el * this.Neurona.Entradas[index];
 
         }
-        console.log("Pesos Nuevos"+ this.PesosEntrenamiento.join(","));
+        
 
         
       }
+      console.log("PESOS NUEVOS: "+ this.PesosEntrenamiento.join(","));
 
       ERMS = sumep/this.Npatrones;
       console.log("Error Iteracion: "+ERMS);
@@ -210,7 +208,7 @@ export class EntrenamientoComponent implements OnInit {
       this.Niteraccion ++;
 
     }
-
+    this.Niteraccion --;
     this.datosEntrenamiento.Pesos = this.PesosEntrenamiento;
     this.iniciarEntrenamiento = true;
     this.iniciarSimulacion = false;

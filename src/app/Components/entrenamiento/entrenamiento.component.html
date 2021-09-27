@@ -1,4 +1,5 @@
-<h1>Entrenamiento de la Neurona</h1>
+<h1><strong>Entrenamiento de la Neurona</strong></h1>
+
 <div>
     <div class="row align-items-center">
         <div class="col-5" name="PanelPE">
@@ -19,33 +20,77 @@
                 <button type="submit" [disabled]="iniciarEntrenamiento || formulario.invalid" class="btn btn-success">Iniciar Entrenamiento</button>
             </form>
 
-
+            <ngx-charts-line-chart [view]="view" [scheme]="colorScheme" [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel" [xAxis]="xAxis" [yAxis]="yAxis" [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" [timeline]="timeline" [results]="multi"
+                (select)="onSelect($event)" (activate)="onActivate($event)" (deactivate)="onDeactivate($event)">
+            </ngx-charts-line-chart>
 
         </div>
 
 
         <div class="col-3 ">
             <h3>Datos Entrada</h3>
+            <h4 class="card-title">Entradas: {{Nentradas}} Salidas: {{Nsalidas}} Patrones: {{Npatrones}}</h4>
             <input type="file" (change)="onChange($event.target.files)">
+            <input type="button" class="btn btn-secondary" value="Reiniciar Neurona" onclick="location.reload()" />
             <button type="button" [disabled]="iniciarNeurona" class="btn btn-success" (click)="inicializarpesos()">Inicializar Pesos</button>
             <div class="row">
                 <h3>Informacion Entrenamiento</h3>
-                <h4 class="card-title">Entradas: {{Nentradas}} Salidas: {{Nsalidas}} Patrones: {{Npatrones}}</h4>
-                <h4 class="card-title">Numero de Iteracciones: {{datosEntrenamiento.IteracionesMax}}</h4>
+
+                <h4 class="card-title">Numero de Iteracciones Maximas: {{datosEntrenamiento.IteracionesMax}}</h4>
+                <h4 class="card-title">Numero de Iteracciones Realizadas: {{Niteraccion}}</h4>
                 <h4 class="card-title">Error Max Permitido: {{datosEntrenamiento.Error}}</h4>
                 <h4 class="card-title">Rata de Aprendizaje: {{datosEntrenamiento.RataAprendizaje}}</h4>
                 <h4 class="card-title">Funcion de Activacion: {{datosEntrenamiento.FuncionActivacion}}</h4>
+                <h3>Pesos</h3>
+
                 <h4 class="card-title" *ngFor="let item of datosEntrenamiento.Pesos;index as i">Peso {{i+1}}: {{item}}</h4>
             </div>
             <button type="button" [disabled]="iniciarSimulacion" class="btn btn-success ">Iniciar Simulacion</button>
+
+            <h3>Simulacion De la Neurona</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Entradas</th>
+                        <th scope="col">SalidasEsperadas</th>
+                        <th scope="col">SalidasRed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>1,1</td>
+                        <td>1</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">2</th>
+                        <td>1,0</td>
+                        <td>1</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">3</th>
+                        <td>0,1</td>
+                        <td>1</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">3</th>
+                        <td>0,0</td>
+                        <td>0</td>
+                        <td>0</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
+
 
 
 
     </div>
 
-    <ngx-charts-line-chart [view]="view" [scheme]="colorScheme" [showXAxisLabel]="showXAxisLabel" [showYAxisLabel]="showYAxisLabel" [xAxis]="xAxis" [yAxis]="yAxis" [xAxisLabel]="xAxisLabel" [yAxisLabel]="yAxisLabel" [timeline]="timeline" [results]="multi"
-        (select)="onSelect($event)" (activate)="onActivate($event)" (deactivate)="onDeactivate($event)">
-    </ngx-charts-line-chart>
+
 
 </div>
