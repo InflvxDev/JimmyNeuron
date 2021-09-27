@@ -24,6 +24,7 @@ export class EntrenamientoComponent implements OnInit {
   iniciarEntrenamiento : boolean = true;
   iniciarNeurona: boolean = true;
   iniciarSimulacion: boolean = true;
+  MostrarTabla: boolean = false;
 
   PesosEntrenamiento: number[] = [];
 
@@ -111,6 +112,8 @@ export class EntrenamientoComponent implements OnInit {
   showXAxisLabel: boolean = true;
   xAxisLabel: string = 'Iteracciones';
   yAxisLabel: string = 'Error';
+  xAxisLabel2: string = 'NumeroPatrones';
+  yAxisLabel2: string = 'Salidas';
   timeline: boolean = true;
 
   colorScheme = {
@@ -125,6 +128,28 @@ export class EntrenamientoComponent implements OnInit {
         {
           "name": "0",
           "value": 1
+        },
+      ]
+    }
+  ]
+
+  multi2 = [
+    
+    {
+      "name": "Salida Esperada",
+      "series": [
+        {
+          "name": "0",
+          "value": 0
+        },
+      ]
+    },
+    {
+      "name": "Salida Red",
+      "series": [
+        {
+          "name": "0",
+          "value": 0
         },
       ]
     }
@@ -239,6 +264,65 @@ export class EntrenamientoComponent implements OnInit {
       yr = S;
     }
     return yr;
+  }
+
+
+  public simulacion(){
+
+    this.Neurona = new Neurona();
+    this.PesosEntrenamiento = this.datosEntrenamiento.Pesos;
+    var ERMS = 1;
+    var yr = 0;
+    var el = 0;
+    var ep = 0;
+    var sumep;
+
+    console.log("----------------ITERACCION DE SIMULACION-------------------------");
+      sumep = 0;
+      ERMS = 0;
+      console.log("PESOS ACTUALES: "+ this.PesosEntrenamiento.join(","));
+      for (let index = 0; index < this.Npatrones; index++) {
+        this.Neurona = this.datosNeuronas[index];
+        yr = this.calcularYr(this.calcularS(this.PesosEntrenamiento,this.Neurona.Entradas),this.datosEntrenamiento.FuncionActivacion)
+        
+        this.datosNeuronas[index].SalidasRed = yr;
+        el = this.Neurona.Salidas[0] - yr
+        ep = Math.abs(el)/this.Nsalidas;
+
+        sumep += ep;
+        
+        console.log("ENTRADAS: "+ this.Neurona.Entradas.join(","));
+        console.log("Salida Esperada: "+ this.Neurona.Salidas[0] + " Salida de la red: "+ yr);
+        console.log("Error del Lineal: "+ el);
+        
+        for (let index = 0; index < this.Neurona.Entradas.length; index++) {
+
+
+          this.PesosEntrenamiento[index] += this.datosEntrenamiento.RataAprendizaje * el * this.Neurona.Entradas[index];
+
+        }
+        
+
+        
+      }
+
+      ERMS = sumep/this.Npatrones;
+      console.log("Error Iteracion: "+ERMS);
+
+
+      console.log(this.datosNeuronas);
+      this.MostrarTabla = true;
+
+      for (let index = 0; index < this.datosNeuronas.length; index++) {
+        var a = index + 1;
+        let copy = this.multi2;
+        copy[0].series.push({ name: a.toString(), value: this.datosNeuronas[index].Salidas[0] });
+        copy[1].series.push({ name: a.toString(), value: this.datosNeuronas[index].SalidasRed });
+        this.multi2 = [...copy];
+        
+      }
+
+
   }
 
 
